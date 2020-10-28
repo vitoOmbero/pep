@@ -1,0 +1,8 @@
+docker container run -it -v $(pwd)/src:/src -v $(pwd)/build:/build -v $(pwd)/install:/install majstarz/ubuntu-sdl2-build:wip
+
+
+
+# sh (internal) script to clean build dir / install dir
+# sh run build tests?
+
+clean cur dir: rm -rf ./*
