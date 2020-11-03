@@ -1,0 +1,10 @@
+//
+// Created by vito on 31.10.20.
+//
+
+#ifndef INC_03_GUESS_NUMBER_VARIABLES_STORAGE_H
+#define INC_03_GUESS_NUMBER_VARIABLES_STORAGE_H
+
+class VariablesStorage {};
+
+#endif  // INC_03_GUESS_NUMBER_VARIABLES_STORAGE_H

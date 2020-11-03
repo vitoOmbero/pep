@@ -1,0 +1,10 @@
+//
+// Created by vito on 2.11.20.
+//
+
+#ifndef INC_03_GUESS_NUMBER_GAME_VARIABLES_SERVICE_H
+#define INC_03_GUESS_NUMBER_GAME_VARIABLES_SERVICE_H
+
+class GameVariablesService {};
+
+#endif  // INC_03_GUESS_NUMBER_GAME_VARIABLES_SERVICE_H
