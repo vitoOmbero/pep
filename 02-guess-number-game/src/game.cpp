@@ -63,18 +63,18 @@ void Game::Play() const {
             GuessNumberAssets::game_stage_strings.at(getLang())[2],
             difficulty_level, 1, 3);
 
-    size_t tries_max;
+    size_t attempts_max;
 
     if (difficulty_level < 2) {
-        tries_max = log2(static_cast<double>(kSecretNumberMax));
+        attempts_max = log2(static_cast<double>(kSecretNumberMax));
         Terminal::ReportVal(GuessNumberAssets::game_stage_strings.at(getLang())[3], kSecretNumberMax);
     } else if (difficulty_level == 2) {
-        tries_max = log2(static_cast<double>(kSecretNumberMax));
+        attempts_max = log2(static_cast<double>(kSecretNumberMax));
     } else {
-        tries_max = log2(static_cast<double>(kSecretNumberMax)) / 3 * 2;
+        attempts_max = log2(static_cast<double>(kSecretNumberMax)) / 3 * 2;
     }
 
-    Terminal::ReportVal(GuessNumberAssets::game_stage_strings.at(getLang())[4], tries_max);
+    Terminal::ReportVal(GuessNumberAssets::game_stage_strings.at(getLang())[4], attempts_max);
     Terminal::ReportMsg(GuessNumberAssets::game_stage_strings.at(getLang())[5]);
 
     size_t secret_number = GetUniformRandomNaturalNumber(kSecretNumberMax);
@@ -86,7 +86,7 @@ void Game::Play() const {
     Terminal::PrintBorderedText('$', oss.str());
 #endif
 
-    size_t try_counter = 0;
+    size_t attempt_counter = 0;
 
     bool is_not_finished = true;
 
@@ -98,12 +98,12 @@ void Game::Play() const {
 
         if (num < secret_number) {
             Terminal::ReportMsg(GuessNumberAssets::game_stage_strings.at(getLang())[9]);
-            ++try_counter;
+            ++attempt_counter;
         }
 
         if (num > secret_number) {
             Terminal::ReportMsg(GuessNumberAssets::game_stage_strings.at(getLang())[10]);
-            ++try_counter;
+            ++attempt_counter;
         }
 
         if (num == secret_number) {
@@ -112,9 +112,9 @@ void Game::Play() const {
             is_not_finished = false;
         }
 
-        if (try_counter < tries_max) {
+        if (attempt_counter < attempts_max) {
             Terminal::ReportVal(GuessNumberAssets::game_stage_strings.at(getLang())[12],
-                                tries_max - try_counter, " ");
+                                attempts_max - attempt_counter, " ");
         } else {
             Terminal::ReportMsg(GuessNumberAssets::game_stage_strings.at(getLang())[13]);
             is_not_finished = false;
@@ -123,9 +123,9 @@ void Game::Play() const {
 
     Terminal::ReportMsg(GuessNumberAssets::game_stage_strings.at(getLang())[14]);
     Terminal::ReportVal(GuessNumberAssets::game_stage_strings.at(getLang())[15], secret_number);
-    Terminal::ReportVal(GuessNumberAssets::game_stage_strings.at(getLang())[16], try_counter);
+    Terminal::ReportVal(GuessNumberAssets::game_stage_strings.at(getLang())[16], attempt_counter);
 
-    if (try_counter < tries_max)
+    if (attempt_counter < attempts_max)
         Terminal::ReportMsg(GuessNumberAssets::game_stage_strings.at(getLang())[17]);
     else
         Terminal::ReportMsg(GuessNumberAssets::game_stage_strings.at(getLang())[18]);

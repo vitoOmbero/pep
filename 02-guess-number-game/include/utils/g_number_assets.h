@@ -29,7 +29,7 @@ namespace GuessNumberAssets {
             "Choose difficulty level (1..3):",
             "This value shall not pass!",
             "Max number: ",
-            "Max tries: ",
+            "Max attempts: ",
             "Game started! ", // 5
             "Randomly-chosen number: ",
             "?: ",
@@ -38,12 +38,12 @@ namespace GuessNumberAssets {
             "Secret number is smaller", // 10
             //"Yes, secret number is @<value_n0>!",
             "Yes, secret number is ",
-            //"You have @<value_n0> tries.",
-            "Tries left ",
-            "You have no tries.",
+            //"You have @<value_n0> attempts.",
+            "attempts left ",
+            "You have no attempts.",
             "Game finished.",
             "Secret number: ", // 15
-            "Tries: ",
+            "attempts: ",
             "Number was guessed.",
             "Number was not guessed."
     };

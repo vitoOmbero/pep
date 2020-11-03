@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(01_guess_number_proto)
+project(02_guess_number_game)
 
 # options
 message("Set project options:")
