@@ -7,21 +7,20 @@
 
 #include <string>
 
-#include "version.h"
 #include "level.h"
+#include "version.h"
 
-struct GameDescriptionInfo{
-    std::string project_work_name;
-    Version version;
-    level_id_t entry_point;
-    level_id_t exit_point;
+struct GameDescriptionInfo {
+  std::string project_work_name;
+  Version version;
+  level_id_t entry_point;
+  level_id_t exit_point;
 };
-
 
 struct GameDescriptionStrings {
-    const std::string title;
-    const std::string default_filler;
-    const std::string bye_bye_msg = "";
+  std::string title;
+  std::string default_filler;
+  std::string bye_bye_msg;
 };
 
-#endif //INC_03_GUESS_NUMBER_GAME_DESCRIPTION_H
+#endif  // INC_03_GUESS_NUMBER_GAME_DESCRIPTION_H

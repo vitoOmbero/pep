@@ -1,40 +1,24 @@
 #include <iostream>
-
-#include <string>
 #include <sstream>
+#include <string>
 
+#include "assets_loader.h"
+#include "engine.h"
 #include "utils/terminal.h"
 
-#include "game.h"
-#include "engine.h"
-
-void AtExit() {
-    // TODO: should be moved to engine functionality + engine assets
-    Terminal::PrintBorderedText('+', "Bye-bye!");
-}
+void AtExit() { pep::AtExitMessage(); }
 
 int main() {
+  const int result = std::atexit(AtExit);
 
-    const int result = std::atexit(AtExit);
+  if (result != 0) {
+    Terminal::ReportErr("AtExit registration failed\n");
+    return EXIT_FAILURE;
+  }
 
-    if (result != 0)
-    {
-        // TODO: should be moved to engine functionality + engine assets
-        Terminal::ReportErr("AtExit registration failed\n");
-        return EXIT_FAILURE;
-    }
+  AssetsLoader::LoadStaticAssetsForGuessNumber(Culture::kEn);
+  pep::Engine e;
+  e.Play();
 
-    Game g_number;
-
-    g_number.LoadAssets(Culture::kEn);
-
-    g_number.Play();
-    /* somehow
-    Engine pep;
-
-    pep.Init(g_number);
-
-    pep.StartPlayFlow();
-*/
-    std::exit(EXIT_SUCCESS);
+  std::exit(EXIT_SUCCESS);
 }

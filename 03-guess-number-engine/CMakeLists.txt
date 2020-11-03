@@ -41,10 +41,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
         src/utils/terminal.cpp
-        
-        src/game.cpp
+        src/utils/g_number_logic.cpp
+
+        src/assets_loader.cpp
         src/engine.cpp
-        src/utils/g_number_logic.cpp src/game_level_logic_processor.cpp include/game_level_logic_processor.h)
+        src/game_level_logic_processor.cpp
+        src/game_variables_service.cpp
+        src/pep.cpp
+        src/text_world_object_processor.cpp
+        src/variables_storage.cpp)
 
 add_executable(${PROJECT_NAME}
         main.cpp
@@ -53,5 +58,5 @@ add_executable(${PROJECT_NAME}
 target_include_directories(${PROJECT_NAME}
         PRIVATE
         ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/../00-common/include/
         )

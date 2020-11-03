@@ -26,9 +26,9 @@ class Engine {
   void Play();
 
  private:
-  inline static std::string at_exit_message;
-  inline static bool is_inited;
-  inline static Engine* singleton_;
+  inline static std::string at_exit_message{""};
+  inline static bool is_inited{false};
+  inline static Engine* singleton_{nullptr};
 };
 
 }  // namespace pep

@@ -5,34 +5,31 @@
 #ifndef INC_03_GUESS_NUMBER_GAME_LEVEL_LOGIC_PROCESSOR_H
 #define INC_03_GUESS_NUMBER_GAME_LEVEL_LOGIC_PROCESSOR_H
 
-#include <stddef.h>
+#include <utils/engine_assets.h>
+
+#include <memory>
+#include <vector>
 
 #include "game_variables.h"
+#include "level.h"
+#include "text_world_object_processor.h"
 
-struct GameLevelLogic {
-  using callback_t = void (*)();
-
-  callback_t OnLoad;
-  callback_t Body;
-  callback_t Transition;
-};
-
+// TODO: factory
 class GameLevelLogicProcessor {
  public:
-  using index = size_t;
+  static void Init();
+  static GameLevelLogicProcessor& GetSingleton();
 
-  static void LoadTextWorldObjectById(index i);
+  void ProcessLevel(size_t level_id);
 
-  static void DoNothing();
+  size_t getCurrentProcessingLevelId() const;
 
-  static void LoadLevelById(index i);
+  void LoadTextWorldObject(size_t level_based_two_id);
 
-  static size_t &VarNatural(game_var_t name);
-  static bool &VarBool(game_var_t name);
-
-  static size_t &Log2FromNatural(game_var_t name);
-
-  static size_t &NewRandomNatural(size_t max_value);
+ private:
+  inline static std::unique_ptr<GameLevelLogicProcessor> singleton_;
+  inline static bool is_inited;
+  size_t current_processing_level_id_{};
 };
 
 #endif  // INC_03_GUESS_NUMBER_GAME_LEVEL_LOGIC_PROCESSOR_H

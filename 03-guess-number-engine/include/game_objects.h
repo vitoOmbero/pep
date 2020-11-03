@@ -10,37 +10,34 @@
 
 #include "game_variables.h"
 
-namespace text_world_objects{
+namespace text_world_objects {
+struct DialogNaturalInput {
+  game_var_name input_result;
+  size_t msg_tip_index = 0;
+  size_t msg_bad_index = 1;
+  bool is_using_templated_messages = true;
+  game_var_name natural_interval_display = "";
+};
 
-    using level_asset_id = size_t ;
+struct Stand {
+  enum class Layout {
+    kFixedDefaultBordered,
+    kPureText,
+  };
 
-    struct Dialog{
-        game_var_t variable;
-        level_asset_id msg_tip_id = 0;
-        level_asset_id msg_bad_id = 1;
-    };
+  std::vector<game_var_name> args_to_show;
+  bool is_input_expected = true;
+  Layout layout = Layout::kFixedDefaultBordered;
+  size_t msg_index = 0;
+};
 
-    struct Stand{
-        enum class Layout{
-            kFixedDefaultBordered,
-            kPureText,
-        };
+/*
+ * Menu
+ * Options
+ * Table
+ */
 
-        std::vector<std::string> args;
-        bool is_input_expected = true;
-        Layout layout = Layout::kFixedDefaultBordered;
-        level_asset_id msg_id = 0;
-    };
+using Type = std::variant<DialogNaturalInput, Stand, std::monostate>;
+}  // namespace text_world_objects
 
-    /*
-     * Menu
-     * Options
-     * Table
-     */
-
-    using Type = std::variant<Dialog, Stand, std::monostate>;
-}
-
-
-
-#endif //INC_03_GUESS_NUMBER_GAME_OBJECTS_H
+#endif  // INC_03_GUESS_NUMBER_GAME_OBJECTS_H
