@@ -41,6 +41,7 @@
 **/build
 **/build**
 **/*-build-**
+**/doctest
 
 #Cmake
 **CMakeLists.txt?*
