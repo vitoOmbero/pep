@@ -20,6 +20,7 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 #include "engine/service/level_processing/game_level_logic_processor.h"
 #include "engine/service/variable_processing/template_string_processing.h"
+#include "engine/service/glrenderer/gl_renderer_service.h"
 #include "engine/symbol_export.h"
 #include "utils/terminal.h"
 #include "version.h"
@@ -93,11 +94,118 @@ PEP_DECLSPEC [[maybe_unused]] void SetGameConfiguration(GameConfiguration cfg) {
 }
 
 PEP_DECLSPEC [[maybe_unused]] void Play() {
+  const int init_result = SDL_Init(SDL_INIT_EVERYTHING);
+  if (init_result != 0) {
+    const char *err_message = SDL_GetError();
+    std::cerr << "error: failed call SDL_Init: " << err_message << std::endl;
+    std::terminate();
+  }
+
+
+  int result;
+
+  // configure opengl
+  int context_flags = SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
+#ifdef PEP_DEBUG
+  context_flags |= SDL_GL_CONTEXT_DEBUG_FLAG;
+#endif
+  result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, context_flags);
+  SDL_assert(result == 0);
+  result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,
+                               SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_assert(result == 0);
+  result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_assert(result == 0);
+  result = SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+  SDL_assert(result == 0);
+  /*
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+   */
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+
+  int gl_major_ver = 0;
+  int gl_minor_ver = 0;
+
+
+
+  result = SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &gl_major_ver);
+  SDL_assert(result == 0);
+  result = SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &gl_minor_ver);
+  SDL_assert(result == 0);
+
+  SDL_Window *const window =
+      SDL_CreateWindow("title", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                       640, 480, ::SDL_WINDOW_OPENGL);
+
+  if (window == nullptr) {
+    std::string msg{">> engine error >> failed call SDL_CreateWindow: "};
+    msg += SDL_GetError();
+    Terminal::ReportErr(msg);
+    SDL_Quit();
+    std::terminate();
+  }
+
+  auto gl_context = SDL_GL_CreateContext(window);
+
+  if (gl_context == nullptr) {
+    std::string msg(">> engine error >> can't create opengl context: ");
+    msg += SDL_GetError();
+    Terminal::ReportErr(msg);
+    SDL_Quit();
+    std::terminate();
+  }
+
+  result = SDL_GL_MakeCurrent(window, gl_context);
+  SDL_assert(result == 0);
+
+
+  // init glad
+  if(!gladLoadGL()) {
+    Terminal::ReportErr("Something went wrong!");
+  }
+  if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+    Terminal::ReportErr("Failed to initialize GLAD");
+  }
+
+
+#ifdef PEP_DEBUG
+  Terminal::ReportMsg("OpenGL Version: ");
+  Terminal::ReportMsg(std::to_string(GLVersion.major));
+  Terminal::ReportMsg(std::to_string(GLVersion.minor));
+
+  Terminal::ReportMsg("OpenGL Shading Language Version: ");
+  std::cout << (char *)glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+
+  Terminal::ReportMsg("OpenGL Vendor: ");
+  Terminal::ReportMsg((char *)glGetString(GL_VENDOR));
+
+  Terminal::ReportMsg("OpenGL Renderer: ");
+  Terminal::ReportMsg((char *)glGetString(GL_RENDERER));
+#endif
+
+#ifdef PEP_DEBUG
+  Terminal::ReportMsg("OpenGL Version: ");
+  Terminal::ReportMsg(std::to_string(gl_major_ver));
+  Terminal::ReportMsg(std::to_string(gl_minor_ver));
+#endif
+
 #ifdef PEP_DEBUG
   Terminal::ReportMsg("Engine play() called...");
 #endif
+  GlRendererService::SetActiveWindow(window);
+
   GameLevelLogicProcessor::GetSingleton().ProcessLevel(
       gGameConfiguration.DescriptionInfo->entry_point);
+
+  SDL_GL_DeleteContext(gl_context);
+  SDL_DestroyWindow(window);
+  SDL_Quit();
 }
 
 }  // namespace engine

@@ -15,7 +15,7 @@ struct GameLevelLogic {
   using callback_t = void (*)();
 
   callback_t OnLoad;
-  callback_t Body;
+  callback_t ExecuteTextWorldLogic;
   callback_t Transition;
 };
 

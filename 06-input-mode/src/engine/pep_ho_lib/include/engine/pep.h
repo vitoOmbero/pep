@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <string>
 
+#include "engine/engine_assets.h"
 #include "engine/service/variable_processing/game_variables.h"
 #include "engine/service/text_world/game_objects.h"
 #include "engine/service/level_processing/level.h"

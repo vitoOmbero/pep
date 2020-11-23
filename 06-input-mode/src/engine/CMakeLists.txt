@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-# TODO: static linking with engine... to fix build issues when static linking with SDL2
+# TODO: static linking with engine... to fix build issues when static linking with SDL2 as shared object
 set(PEP_SDL_STATIC_LINKING FALSE)
 set(PEP_SDL_CUSTOM_BUILD FALSE)
 
@@ -16,11 +16,21 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(ENGINE_SOURCES
         libengine.cpp
+        glad.c
         service/game_variables_service.cpp
         service/game_level_logic_processor.cpp
         service/text_world_object_processor.cpp
         service/variables_storage.cpp
-        utils/terminal.cpp pep.cpp)
+        utils/terminal.cpp
+        utils/sequence_generator.cpp
+        pep.cpp
+        service/event_processing_service.cpp
+        service/glrenderer/gl_renderer_service.cpp
+        service/glrenderer/gl_rendering_target.cpp
+        service/glrenderer/attribute.cpp
+        service/glrenderer/mesh.cpp
+        service/glrenderer/gl_renderer.cpp
+        )
 
 add_library(${PROJECT_NAME} SHARED ${ENGINE_SOURCES})
 add_library(sub::engine ALIAS ${PROJECT_NAME})
@@ -77,6 +87,8 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE sub::pep)
 
+set (ASSETS-DIR ${CMAKE_SOURCE_DIR}/../../00-common/assets/)
+
 if(PEP_BUILD_ENGINE_LIBRARY)
     set (PEP_INSTALL_PATH_BIN ${CMAKE_SOURCE_DIR}/../install/bin/${CMAKE_BUILD_TYPE})
 
@@ -86,6 +98,8 @@ if(PEP_BUILD_ENGINE_LIBRARY)
         LIBRARY DESTINATION ${PEP_INSTALL_PATH_BIN}/
         ARCHIVE DESTINATION ${PEP_INSTALL_PATH_BIN}/
     )
+
+    install(DIRECTORY ${ASSETS_DIR} DESTINATION ${PEP_INSTALL_PATH_BIN}/)
 endif(PEP_BUILD_ENGINE_LIBRARY)
 
 if(PEP_BUILD_TESTS)
@@ -99,6 +113,7 @@ if(PEP_BUILD_TESTS)
             ARCHIVE DESTINATION ${PEP_INSTALL_PATH_TESTS}/
         )
 
+    install(DIRECTORY ${ASSETS_DIR} DESTINATION ${PEP_INSTALL_PATH_TESTS}/)
 endif(PEP_BUILD_TESTS)
 
 

@@ -41,6 +41,8 @@ if(PEP_DEBUG OR CMAKE_BUILD_TYPE MATCHES Debug OR CMAKE_BUILD_TYPE MATCHES RelWi
     if(PEP_VERBOSE)
         if (verboseLevel MATCHES ALL)
             add_compile_definitions(PEP_VERBOSE_GAME_LOGIC )
+            #add_compile_definitions(PEP_EVENTS_VERBOSE)
+            add_compile_definitions(RENDERER_VERBOSE)
         endif()
     endif(PEP_VERBOSE)
 endif()
@@ -105,7 +107,6 @@ if(PEP_BUILD_TESTS)
 else()
     add_compile_definitions(DOCTEST_CONFIG_DISABLE)
 endif(PEP_BUILD_TESTS)
-
 
 
 add_subdirectory(engine)

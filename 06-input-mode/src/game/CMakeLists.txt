@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(game VERSION 0.0.1 DESCRIPTION "prototype game on prototype engine")
 
-option(GNUMBER "Build Gnumber game" ON)
+option(GNUMBER "Build Gnumber game" OFF)
+option(VISDEMO "Build Visual Demo game" ON)
 
 ## default option
 set(GAME_NAME "Dummy dl test")
@@ -10,6 +11,11 @@ set(GAME_NAME "Dummy dl test")
 if(GNUMBER)
     set(BUILD_G_NUMBER True)
     set(GAME_NAME "GNumber")
+endif()
+
+if(VISDEMO)
+    set(BUILD_VIS_DEMO True)
+    set(GAME_NAME "Visual Demo")
 endif()
 
 if(BUILD_G_NUMBER)
@@ -22,7 +28,18 @@ if(BUILD_G_NUMBER)
             )
 endif(BUILD_G_NUMBER)
 
+if(BUILD_VIS_DEMO)
+    set(GAME_CONTENT_SOURCES
+            visual_scenes/logic.cpp
+            visual_scenes/libgame.cpp
+            )
+    set(GAME_CONTENT_INCLUDE_DIR
+            include/visual_scenes
+            )
+endif(BUILD_VIS_DEMO)
+
 message(STATUS "GNUMBER: " ${GNUMBER})
+message(STATUS "VIS_DEMO: " ${VISDEMO})
 message(STATUS "Game to build: " ${GAME_NAME})
 
 set(GAME_SOURCES
