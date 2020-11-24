@@ -40,5 +40,5 @@ size_t gl_rendering_target::SizeOfVertexData(
 size_t gl_rendering_target::SizeOfIndexData(
         const VertexDataPointer *const vdp)
 {
-    return SizeOfGlTypeByGLenum(vdp->i_typecode) * vdp->n_indices;
+    return SizeOfGlTypeByGLenum(vdp->i_type_code) * vdp->n_indices;
 }

@@ -49,6 +49,13 @@ GlRenderer::GlRenderer() {
 }
 
 void GlRenderer::Init(const std::vector<Mesh> &meshes) {
+  if (meshes.empty()) {
+#ifdef PEP_DEBUG
+    Terminal::ReportErr("Wrong mesh list for current game level!");
+#endif
+    return;
+  }
+
 #ifdef RENDERER_VERBOSE
   {
     GLint maxVertexAttribs;
@@ -59,10 +66,14 @@ void GlRenderer::Init(const std::vector<Mesh> &meshes) {
   }
 #endif
 
-  for (auto mesh : meshes) {
+  std::for_each(meshes.begin(), meshes.end(), [&](const Mesh &mesh) {
+
+    // TODO: refactor and add checks for explicit rendering target type
+    //mesh.getRenderingTargetType()
+
     ProcessMeshBoundedRenderingTargets(mesh.getRtpp(), mesh.getDrawingSpec(),
                                        mesh.getShaderPack());
-  }
+  });
 }
 
 // current algorithm ignores rendering target processing in case of shared ADP
@@ -103,6 +114,8 @@ void GlRenderer::ProcessMeshBoundedRenderingTargets(
   }
 #endif
 
+// TODO: refactor this
+// NOTE: with new approach, it is possible to reduce even more code
   if (vdp_last == 1 && aps_last == vdp_last) {
     ProcessRenderingTargetK11(rtpp, ds, 0, sp);
   } else if (aps_last == vdp_last)
@@ -110,8 +123,6 @@ void GlRenderer::ProcessMeshBoundedRenderingTargets(
       ProcessRenderingTargetK11(rtpp, ds, i, sp);
   else
     ProcessRenderingTargetK1N(rtpp, ds, sp);
-
-  aps_binding_counter_ += rtpp.n_aps;
 }
 
 void GlRenderer::CreateIndexedTarget(
@@ -277,7 +288,7 @@ void GlRenderer::ProcessRenderingTargetK11(
   if (rtpp.aps[target_index].layout != AttributeDataLayout::kContiguous) {
     Terminal::ReportErr(TAG "Warning: VertexAttributeData at address");
     Terminal::ReportErr(
-        static_cast<void *>(const_cast<RenderingTargetPackPointer*>(&rtpp)));
+        static_cast<void *>(const_cast<RenderingTargetPackPointer *>(&rtpp)));
     Terminal::ReportErr("may be ill-formed. ");
 
     Terminal::ReportErr(TAG "AttributeDataLayout should be: ");
@@ -287,16 +298,17 @@ void GlRenderer::ProcessRenderingTargetK11(
   }
 #endif
 
+  GLuint location_counter_{0};
 
   glVertexAttribPointer(
-      aps_binding_counter_,
+      location_counter_,
       attribute::RuntimeMap::Get(rtpp.aps[target_index].scheme)->attributes_n,
       rtpp.aps[target_index].type_code,
       BooleanToGLbool(rtpp.aps[target_index].is_data_NOT_normalized),
       rtpp.aps[target_index].stride, rtpp.aps[target_index].offset);
   GL_CHECK()
 
-  glEnableVertexAttribArray(aps_binding_counter_);
+  glEnableVertexAttribArray(location_counter_);
   GL_CHECK()
 
   if (rtpp.vdp[target_index].i_data != nullptr) {
@@ -341,18 +353,20 @@ void GlRenderer::ProcessRenderingTargetK1N(
   glBindVertexArray(vao_);
   GL_CHECK()
 
+  GLuint location_counter_{0};
+
   for (unsigned char i = 0; i < rtpp.n_aps; ++i) {
-    auto name = aps_binding_counter_ + i;
+    auto location = location_counter_ + i;
     auto number = attribute::RuntimeMap::Get(rtpp.aps[i].scheme)->attributes_n;
     auto gltype = rtpp.aps[i].type_code;
     auto glbool = BooleanToGLbool(rtpp.aps[i].is_data_NOT_normalized);
     auto stride = rtpp.aps[i].stride;
     auto offset = rtpp.aps[i].offset;
 
-    glVertexAttribPointer(name, number, gltype, glbool, stride, offset);
+    glVertexAttribPointer(location, number, gltype, glbool, stride, offset);
     GL_CHECK()
 
-    glEnableVertexAttribArray(aps_binding_counter_ + i);
+    glEnableVertexAttribArray(location);
     GL_CHECK()
   }
 
@@ -386,7 +400,6 @@ void GlRenderer::RenderFrame() {
   // vertex targets rendering
   glBindVertexArray(vao_);
   GL_CHECK()
-
 
   for (size_t i = 0; i < v_target_sizes.size(); ++i) {
     glUseProgram(v_target_shaders_[i]);

@@ -14,75 +14,6 @@
 #include "utils/terminal.h"
 
 
-namespace pep::assets::SimpleTriangleInterleaved
-{
-     static uint32_t id = 111;
-    using namespace gl_rendering_target;
-
-// former TriangleObjectPureLayout
-     static float data[9+9] // clang-format off
-            /*data self*/ { 0.f,  0.5f, 0.f,	/* Top   */   1.f, 0.f, 0.f, /*Red channel*/
-                            0.5f, -0.5f, 0.f,	/* Right */   0.f, 1.f, 0.f, /*Green channel*/
-                            -0.5f, -0.5f, 0.f,	/* Left  */   0.f, 0.f, 1.f, /*Blue channel*/
-            };
-// clang-format on
-
-     static VertexDataPointer vdp = VertexDataPointer(id, 3, data);
-
-     static AttributePackSpecification aps[] = {
-            AttributePackSpecification(id, GL_FLOAT, AttributeDataLayout::kInterleaved,
-                                       attribute::Scheme::kPosition3d, nullptr,
-                                       6 * (GLsizei)SizeOfGlTypeByGLenum(GL_FLOAT)),
-            AttributePackSpecification(id, GL_FLOAT, AttributeDataLayout::kInterleaved,
-                                       attribute::Scheme::kColorRgb,
-                                       (GLfloat*)(sizeof(GLfloat) * 3),
-                                       6 * (GLsizei)SizeOfGlTypeByGLenum(GL_FLOAT))
-    };
-
-     static RenderingTargetPackPointer rtpp{ &vdp, aps, 1, 2 };
-
-     const char* v_shader_src_path =
-            "assets/shaders/demo/simple_interleaved/simple_triangle.v.glsl";
-     const char* f_shader_src_path =
-            "assets/shaders/demo/simple_interleaved/simple_triangle.f.glsl";
-} // namespace demo::assets::SimpleTriangleInterleaved
-
-
-namespace pep::assets::SimpleQuadIndexed
-{
-     static uint32_t id = 222;
-    using namespace gl_rendering_target;
-
-     const char* v_shader_src_path =
-            "assets/shaders/demo/simple_indices/simple_tr_for_quad.v.glsl";
-     const char* f_shader_src_path =
-            "assets/shaders/demo/simple_indices/simple_tr_for_ind_quad.f.glsl";
-
-     static GLfloat v_data[] // clang-format off
-            /*data self*/ {
-                    -0.5f,  0.5f, 0.0f,		// Top left
-                    0.5f,  0.5f, 0.0f,		// Top right
-                    0.5f, -0.5f, 0.0f,		// Bottom right
-                    -0.5f, -0.5f, 0.0f		// Bottom left
-            };
-
-     static GLuint i_data[] = {
-            0, 1, 2,  // First Triangle
-            0, 2, 3   // Second Triangle
-    };
-// clang-format on
-
-     static VertexDataPointer vdp =
-            VertexDataPointer(id, 4, v_data, 6, GL_UNSIGNED_INT, i_data);
-
-     static AttributePackSpecification aps =
-            AttributePackSpecification(id, GL_FLOAT, AttributeDataLayout::kContiguous,
-                                       attribute::Scheme::kPosition3d);
-
-     static RenderingTargetPackPointer rtpp{ &vdp, &aps, 1, 1 };
-
-} // namespace demo::assets::SimpleQuadIndexed
-
 
 void GameLevelLogicProcessor::ProcessLevel(size_t level_id) {
   current_processing_level_id_ = level_id;
@@ -93,17 +24,7 @@ void GameLevelLogicProcessor::ProcessLevel(size_t level_id) {
   auto timer = std::chrono::high_resolution_clock();
   auto begin = timer.now();
 
-  // load meshes simulation
-  GlRenderer gl_renderer;
-
-  Mesh triangle(
-      pep::assets::SimpleTriangleInterleaved::rtpp,
-      FileToString(pep::assets::SimpleTriangleInterleaved::v_shader_src_path),
-      FileToString(pep::assets::SimpleTriangleInterleaved::f_shader_src_path));
-
-  std::vector<Mesh> meshes{triangle};
-
-  if (level_id == 1) gl_renderer.Init(meshes);
+  GlRendererService::InitFor(level_id);
 
   while (is_continuing_) {
     auto last_frame_end = timer.now();
@@ -120,14 +41,21 @@ void GameLevelLogicProcessor::ProcessLevel(size_t level_id) {
 
     GameUpdateService::Update(frame_delta_);
 
-    if (level_id == 1) GlRendererService::Render(gl_renderer);
+    GlRendererService::Render();
 
     (*gGameConfiguration.Levels)[level_id].game_logic.ExecuteTextWorldLogic();
 
-    (*gGameConfiguration.Levels)[level_id].game_logic.Transition();
+    auto fptr = (*gGameConfiguration.Levels)[level_id].game_logic.TransitionCondition;
+    if((fptr == nullptr) || (fptr())){
+      is_continuing_ = false;
+    }
 
     begin = last_frame_end;
   }
+
+  (*gGameConfiguration.Levels)[level_id].game_logic.Transition();
+
+  GlRendererService::Destroy();
 }
 
 size_t GameLevelLogicProcessor::getCurrentProcessingLevelId() const {

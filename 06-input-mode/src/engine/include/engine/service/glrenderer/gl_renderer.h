@@ -40,7 +40,6 @@ private:
     size_t                accumulative_ebo_offset_{ 0 };
 
     GLuint               vao_;
-    GLuint               aps_binding_counter_{0};
 
     /**
      * @brief ProcessMeshBoundedRenderingTargets Create vbo, ebo and register

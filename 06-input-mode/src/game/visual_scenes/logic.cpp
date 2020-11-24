@@ -23,6 +23,10 @@ void VisualScenes::Logic::triangle_level::Transition() {
 
 }
 
+bool VisualScenes::Logic::triangle_level::TransitionCondition() {
+  return false;
+}
+
 void VisualScenes::Logic::quad_level::OnLoad() {
   pep::LoadTextWorldObjectById(0);
 }

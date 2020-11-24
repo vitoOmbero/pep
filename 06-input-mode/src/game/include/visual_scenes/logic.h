@@ -24,7 +24,8 @@ inline const Level data{
     // LEVEL
     {0},
     {{welcome}},
-    {intro_level::OnLoad, intro_level::ExecuteTextWorldLogic, intro_level::Transition}};
+    {intro_level::OnLoad, intro_level::ExecuteTextWorldLogic,
+     intro_level::Transition}};
 }  // namespace intro_level
 
 namespace common_text_world_objects {
@@ -68,8 +69,15 @@ void ExecuteTextWorldLogic();
 
 void Transition();
 
+bool TransitionCondition();
+
 inline text_world_objects::Stand triangle_info{
     {{/*no*/}}, false, text_world_objects::Stand::Layout::kPureText, 0};
+
+inline visual_world_objects::Viewable default_triangle{};
+
+inline static std::vector<visual_world_objects::Type> vwo{
+    visual_world_objects::Type(default_triangle)};
 
 inline const Level data{
     {{1, 3, 4, 5, 6, 7}},
@@ -78,9 +86,10 @@ inline const Level data{
       common_text_world_objects::switch_level_info,
       common_text_world_objects::mouse_info,
       common_text_world_objects::touch_info}},
-    {OnLoad, ExecuteTextWorldLogic, Transition}};
+    {OnLoad, ExecuteTextWorldLogic, Transition, TransitionCondition},
+    vwo};
 
-}  // namespace triangle_level
+};  // namespace triangle_level
 
 namespace quad_level {
 
@@ -116,7 +125,7 @@ inline std::vector<VariableDeclaration> declaration{
 inline const std::vector<Level> guess_number_levels{
     intro_level::data, triangle_level::data, quad_level::data};
 
-}  // namespace GuessNumber::Logic
+}  // namespace VisualScenes::Logic
 #endif  // INC_03_GUESS_NUMBER_G_NUMBER_LOGIC_H
 
 #pragma clang diagnostic pop
