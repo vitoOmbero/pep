@@ -9,13 +9,19 @@
 
 namespace visual_world_objects {
 
-struct Viewable {
+struct ViewableTriangle {
   Mesh mesh{{nullptr, nullptr, 0, 0},
             RenderingTargetType::VertexDescribed,
             {"", "", 0, nullptr}};
 };
 
-using Type = std::variant<Viewable, std::monostate>;
+struct ViewableQuad {
+  Mesh mesh{{nullptr, nullptr, 0, 0},
+            RenderingTargetType::IndexDescribed,
+            {"", "", 0, nullptr}};
+};
+
+using Type = std::variant<ViewableTriangle, ViewableQuad, std::monostate>;
 }  // namespace visual_world_objects
 
 #endif  // INC_05_GUESS_NUMBER_GAME_OBJECTS_H

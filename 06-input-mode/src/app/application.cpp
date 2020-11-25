@@ -8,14 +8,13 @@ void Application::Run() {
   EngineConfiguration cfg;
   engine_fpc::Get().Configure(cfg);
 
-  GameConfiguration game_cfg{
-    _assets_loader.getDescriptionInfo(),
-    _assets_loader.getDescriptionStrings(),
-    _assets_loader.getStringAssets(),
-    _assets_loader.getGlobalVariableDeclarations(),
-    _assets_loader.getLevels(),
-    _assets_loader.getLanguage()
-  };
+  GameConfiguration game_cfg{_assets_loader.getDescriptionInfo(),
+                             _assets_loader.getDescriptionStrings(),
+                             _assets_loader.getStringAssets(),
+                             _assets_loader.getGlobalVariableDeclarations(),
+                             _assets_loader.getLevels(),
+                             _assets_loader.getLanguage(),
+                             _assets_loader.getInputModes()};
 
   engine_fpc::Get().SetGameConfiguration(game_cfg);
 

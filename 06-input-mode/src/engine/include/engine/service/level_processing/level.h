@@ -14,12 +14,10 @@ using level_id_t = size_t;
 
 struct GameLevelLogic {
   using callback_t = void (*)();
-  using callback_bool_t = bool (*)();
 
   callback_t OnLoad;
   callback_t ExecuteTextWorldLogic;
   callback_t Transition;
-  callback_bool_t TransitionCondition{nullptr};
 };
 
 struct Level {

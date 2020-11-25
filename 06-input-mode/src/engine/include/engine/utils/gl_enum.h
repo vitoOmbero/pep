@@ -2,6 +2,7 @@
 #define GL_ENUM_H
 
 #include <glad/glad.h>
+#include "engine/service/glrenderer/gl_types.h"
 
 enum class DrawingSpec
 {
@@ -10,7 +11,7 @@ enum class DrawingSpec
     kStreaming
 };
 
-inline static GLenum DrawingSpecToGlenum(DrawingSpec ds)
+inline static GLenum DrawingSpecToGlEnum(DrawingSpec ds)
 {
     switch (ds)
     {
@@ -30,7 +31,7 @@ inline static GLenum DrawingSpecToGlenum(DrawingSpec ds)
  * @param gl_symb_constant GL_FLOAT, GL_FIXED, etc
  * @return sizeof(gl_associated_type) or 0
  */
-inline static size_t SizeOfGlTypeByGLenum(GLenum gl_symb_constant)
+inline static size_t SizeOfGlTypeByGlEnum(GLenum gl_symb_constant)
 {
     switch (gl_symb_constant)
     {
@@ -59,9 +60,22 @@ inline static size_t SizeOfGlTypeByGLenum(GLenum gl_symb_constant)
     }
 };
 
-inline GLboolean BooleanToGLbool(bool arg)
+inline GLboolean BooleanToGlBoolConstant(bool arg)
 {
     return arg ? GL_TRUE : GL_FALSE;
+}
+
+inline GLenum GlPolygonModeToGlEnum(GlPolygonMode mode){
+    switch (mode) {
+        case GlPolygonMode::kGlPoint:
+            return GL_POINT;
+        case GlPolygonMode::kGlLine:
+            return GL_LINE;
+        case GlPolygonMode::kGlFill:
+            return GL_FILL;
+        default:
+            return GL_FILL;
+    }
 }
 
 #endif // GL_ENUM_H

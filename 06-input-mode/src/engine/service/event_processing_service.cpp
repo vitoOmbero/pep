@@ -1,5 +1,7 @@
 #include "service/event_processing/event_processing_service.h"
 
+#include "service/input_processing/input_processing_service.h"
+
 #include "utils/terminal.h"
 
 #define E sdl_event_type_code
@@ -106,6 +108,7 @@ static void ProcessKeyboardEvent(const SDL_Event& sdl_event){
 #ifdef PEP_DEBUG
   PlaceholderProcessEventImplementation("Keyboard",sdl_event);
 #endif
+  InputProcessingService::ProcessKeyboardEvent(sdl_event.key);
 }
 
 static void ProcessMouseEvent(const SDL_Event& sdl_event){
@@ -180,52 +183,84 @@ void EventProcessingService::ProcessEvent() {
 
   while (SDL_PollEvent(&sdl_event)) {
     auto e = sdl_event.type;
-    if (IsSdlQuit(e))
+    if (IsSdlQuit(e)) {
       ProcessQuitEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlAppEvent(e))
+    if (IsSdlAppEvent(e)){
       ProcessAppEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlDisplayEvent(e))
+    if (IsSdlDisplayEvent(e)){
       ProcessDisplayEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlWindowEvent(e))
+    if (IsSdlWindowEvent(e)){
       ProcessWindowEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlKeyboardEvent(e))
+    if (IsSdlKeyboardEvent(e)){
       ProcessKeyboardEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlMouseEvent(e))
+    if (IsSdlMouseEvent(e)){
       ProcessMouseEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlJoystickEvent(e))
+    if (IsSdlJoystickEvent(e)){
       ProcessJoystickEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlGameControllerEvent(e))
+    if (IsSdlGameControllerEvent(e)){
       ProcessGameControllerEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlTouchEvent(e))
+    if (IsSdlTouchEvent(e)){
       ProcessTouchEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlGestureEvent(e))
+    if (IsSdlGestureEvent(e)){
       ProcessGestureEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlClipboardEvent(e))
+    if (IsSdlClipboardEvent(e)){
       ProcessClipboardEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlDragAndDropEvent(e))
+    if (IsSdlDragAndDropEvent(e)){
       ProcessDragAndDropEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlAudioEvent(e))
+    if (IsSdlAudioEvent(e)){
       ProcessAudioEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlSensorEvent(e))
+    if (IsSdlSensorEvent(e)){
       ProcessSensorEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlRenderEvent(e))
+    if (IsSdlRenderEvent(e)){
       ProcessRenderEvent(sdl_event);
+      continue;
+    }
 
-    if (IsSdlUserEvent(e))
+    if (IsSdlUserEvent(e)){
       ProcessUserEvent(sdl_event);
+      continue;
+    }
   }
 }

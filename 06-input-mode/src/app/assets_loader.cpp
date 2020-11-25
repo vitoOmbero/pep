@@ -17,6 +17,7 @@ void AssetsLoader::LoadStaticAssets() {
   _global_variable_declarations = fpc.GetGlobalVariableDeclarations();
   _levels = fpc.GetLevels();
   _language = fpc.GetLanguage();
+  _input_modes = fpc.GetInputModes();
 
 #ifdef  PEP_DEBUG
   std::cout << fpc.GetDescriptionInfo()->project_work_name << std::endl;
@@ -56,3 +57,7 @@ const std::vector<VariableDeclaration>
 const std::vector<Level> *AssetsLoader::getLevels() const { return _levels; }
 
 Culture::Language AssetsLoader::getLanguage() const { return _language; }
+
+const InputModeVector *AssetsLoader::getInputModes() const {
+  return _input_modes;
+}

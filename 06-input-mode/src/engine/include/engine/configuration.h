@@ -7,6 +7,7 @@
 #include "engine/assets_loading_startegy.h"
 #include "engine/service/game_meta_info/game_description.h"
 #include "engine_assets.h"
+#include "engine/service/input_processing/keys.h"
 
 struct EngineConfiguration {
   const char *placeholder = "Some Engine Configuration";
@@ -21,6 +22,7 @@ struct GameConfiguration {
   const std::vector<VariableDeclaration> *GlobalVariableDeclarations;
   const std::vector<Level> *Levels;
   Culture::Language Language;
+  const InputModeVector * InputModes;
 };
 
 inline EngineConfiguration gEngineConfiguration;

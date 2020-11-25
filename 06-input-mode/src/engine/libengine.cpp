@@ -18,9 +18,10 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
 #include <SDL2/SDL.h>
 
+#include "engine/service/glrenderer/gl_renderer_service.h"
 #include "engine/service/level_processing/game_level_logic_processor.h"
 #include "engine/service/variable_processing/template_string_processing.h"
-#include "engine/service/glrenderer/gl_renderer_service.h"
+#include "engine/service/input_processing/input_processing_service.h"
 #include "engine/symbol_export.h"
 #include "utils/terminal.h"
 #include "version.h"
@@ -101,7 +102,6 @@ PEP_DECLSPEC [[maybe_unused]] void Play() {
     std::terminate();
   }
 
-
   int result;
 
   // configure opengl
@@ -128,11 +128,8 @@ PEP_DECLSPEC [[maybe_unused]] void Play() {
    */
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-
   int gl_major_ver = 0;
   int gl_minor_ver = 0;
-
-
 
   result = SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &gl_major_ver);
   SDL_assert(result == 0);
@@ -164,15 +161,13 @@ PEP_DECLSPEC [[maybe_unused]] void Play() {
   result = SDL_GL_MakeCurrent(window, gl_context);
   SDL_assert(result == 0);
 
-
   // init glad
-  if(!gladLoadGL()) {
+  if (!gladLoadGL()) {
     Terminal::ReportErr("Something went wrong!");
   }
   if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
     Terminal::ReportErr("Failed to initialize GLAD");
   }
-
 
 #ifdef PEP_DEBUG
   Terminal::ReportMsg("OpenGL Version: ");
@@ -200,8 +195,19 @@ PEP_DECLSPEC [[maybe_unused]] void Play() {
 #endif
   GlRendererService::SetActiveWindow(window);
 
+  InputProcessingService::Init(gGameConfiguration.InputModes);
+
   GameLevelLogicProcessor::GetSingleton().ProcessLevel(
       gGameConfiguration.DescriptionInfo->entry_point);
+
+  while (GameLevelLogicProcessor::isNotLastLevel()) {
+    GameLevelLogicProcessor::GetSingleton().ProcessNextLevel();
+  }
+
+  GameLevelLogicProcessor::GetSingleton().ProcessLevel(
+      gGameConfiguration.DescriptionInfo->exit_point);
+
+  InputProcessingService::Destroy();
 
   SDL_GL_DeleteContext(gl_context);
   SDL_DestroyWindow(window);

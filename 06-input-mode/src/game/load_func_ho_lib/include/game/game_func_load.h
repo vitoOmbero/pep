@@ -21,6 +21,7 @@ using GetGlobalVariableDeclarations =
 using GetLevels = const std::vector<Level>* (*)();
 using GetLanguage = Culture::Language (*)();
 using GetAssetsLoadingStrategy = AssetsLoadingStrategy (*)();
+using GetInputModes = InputModeVector* (*)();
 }  // namespace game_func_load::ptrs
 
 #ifndef PTRS_ONLY
@@ -29,10 +30,12 @@ static const char* PrintHelloFromGame = "hello_from_game";
 static const char* GetDescriptionInfo = "getDescriptionInfo";
 static const char* GetDescriptionStrings = "getDescriptionStrings";
 static const char* GetStringAssets = "getStringAssets";
-static const char* GetGlobalVariableDeclarations = "getGlobalVariableDeclarations";
+static const char* GetGlobalVariableDeclarations =
+    "getGlobalVariableDeclarations";
 static const char* GetLevels = "getLevels";
 static const char* GetLanguage = "getLanguage";
 static const char* GetAssetsLoadingStrategy = "getAssetsLoadingStrategy";
+static const char* GetInputModes = "getInputModes";
 }  // namespace game_func_load::symbols
 #endif
 
@@ -49,6 +52,7 @@ struct game_loaded_ptrs {
   game_func_load::ptrs::GetLevels GetLevels;
   game_func_load::ptrs::GetLanguage GetLanguage;
   game_func_load::ptrs::GetAssetsLoadingStrategy GetAssetsLoadingStrategy;
+  game_func_load::ptrs::GetInputModes GetInputModes;
 };
 
 inline static void LoadFunctions(game_loaded_ptrs& fpc /*out*/) {
@@ -76,6 +80,8 @@ inline static void LoadFunctions(game_loaded_ptrs& fpc /*out*/) {
   fpc.GetLanguage = (ptrs::GetLanguage)dlsym(game_handle, symbols::GetLanguage);
   fpc.GetAssetsLoadingStrategy = (ptrs::GetAssetsLoadingStrategy)dlsym(
       game_handle, symbols::GetAssetsLoadingStrategy);
+  fpc.GetInputModes = (ptrs::GetInputModes)dlsym(
+          game_handle, symbols::GetInputModes);
 }
 
 #endif

@@ -9,21 +9,28 @@ class AssetsLoader {
 
   void LoadStaticAssets();
 
-    [[nodiscard]] AssetsLoadingStrategy getAssetsLoadingStrategy() const;
+  [[nodiscard]] AssetsLoadingStrategy getAssetsLoadingStrategy() const;
 
-    [[nodiscard]] const GameDescriptionInfo *getDescriptionInfo() const;
+  [[nodiscard]] const GameDescriptionInfo *getDescriptionInfo() const;
 
-    [[nodiscard]] const std::unordered_map<Culture::Language, GameDescriptionStrings> *getDescriptionStrings() const;
+  [[nodiscard]] const std::unordered_map<Culture::Language,
+                                         GameDescriptionStrings>
+      *getDescriptionStrings() const;
 
-    [[nodiscard]] const std::unordered_map<Culture::Language, std::vector<std::string>> *getStringAssets() const;
+  [[nodiscard]] const std::unordered_map<Culture::Language,
+                                         std::vector<std::string>>
+      *getStringAssets() const;
 
-    [[nodiscard]] const std::vector<VariableDeclaration> *getGlobalVariableDeclarations() const;
+  [[nodiscard]] const std::vector<VariableDeclaration>
+      *getGlobalVariableDeclarations() const;
 
-    [[nodiscard]] const std::vector<Level> *getLevels() const;
+  [[nodiscard]] const std::vector<Level> *getLevels() const;
 
-    [[nodiscard]] Culture::Language getLanguage() const;
+  [[nodiscard]] Culture::Language getLanguage() const;
 
-private:
+  [[nodiscard]] const InputModeVector *getInputModes() const;
+
+ private:
   const AssetsLoadingStrategy _assets_loading_strategy{
       AssetsLoadingStrategy::kCompileTimeBuiltInAssets};
 
@@ -34,6 +41,7 @@ private:
       *_string_assets;
   const std::vector<VariableDeclaration> *_global_variable_declarations;
   const std::vector<Level> *_levels;
+  const InputModeVector *_input_modes;
   Culture::Language _language;
 };
 

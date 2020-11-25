@@ -30,7 +30,7 @@ set(ENGINE_SOURCES
         service/glrenderer/attribute.cpp
         service/glrenderer/mesh.cpp
         service/glrenderer/gl_renderer.cpp
-        )
+        service/input_processing/input_processing_service.cpp utils/color_map.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${ENGINE_SOURCES})
 add_library(sub::engine ALIAS ${PROJECT_NAME})

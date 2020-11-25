@@ -12,7 +12,7 @@ inline const std::unordered_map<Culture::Language,
         {Culture::kEn, {{"Visual Demo"}, {"$"}, {"Bye-bye! See you later!"}}},
         {Culture::kRu, {{"Визуальное демо"}, {"@"}}}};
 
-inline const GameDescriptionInfo gdi{{"visual_scenes"}, {0, 1, 2}, 0, 100500};
+inline const GameDescriptionInfo gdi{{"visual_scenes"}, {0, 1, 2}, 0, 3};
 }
 
 #endif

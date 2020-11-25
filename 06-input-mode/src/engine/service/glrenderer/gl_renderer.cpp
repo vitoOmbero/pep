@@ -39,11 +39,6 @@
 GlRenderer::GlRenderer() {
   // glViewport(0, 0, 640, 480);
 
-  glClearColor(.24, .12, .12, 1.);
-  GL_CHECK()
-  /*glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-  GL_CHECK()*/
-
   glGenVertexArrays(1, &vao_);
   GL_CHECK()
 }
@@ -67,9 +62,8 @@ void GlRenderer::Init(const std::vector<Mesh> &meshes) {
 #endif
 
   std::for_each(meshes.begin(), meshes.end(), [&](const Mesh &mesh) {
-
     // TODO: refactor and add checks for explicit rendering target type
-    //mesh.getRenderingTargetType()
+    // mesh.getRenderingTargetType()
 
     ProcessMeshBoundedRenderingTargets(mesh.getRtpp(), mesh.getDrawingSpec(),
                                        mesh.getShaderPack());
@@ -84,9 +78,6 @@ void GlRenderer::ProcessMeshBoundedRenderingTargets(
   using gl_rendering_target::AttributePackSpecification;
   using gl_rendering_target::RenderingTargetPackPointer;
   using gl_rendering_target::VertexDataPointer;
-
-  size_t aps_i = 0;
-  size_t vdp_i = 0;
 
 #ifdef RENDERER_VERBOSE
   if (rtpp.n_aps == 0 && rtpp.n_vdp == 0) {
@@ -114,8 +105,8 @@ void GlRenderer::ProcessMeshBoundedRenderingTargets(
   }
 #endif
 
-// TODO: refactor this
-// NOTE: with new approach, it is possible to reduce even more code
+  // TODO: refactor this
+  // NOTE: with new approach, it is possible to reduce even more code
   if (vdp_last == 1 && aps_last == vdp_last) {
     ProcessRenderingTargetK11(rtpp, ds, 0, sp);
   } else if (aps_last == vdp_last)
@@ -138,21 +129,21 @@ void GlRenderer::CreateIndexedTarget(
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
   GL_CHECK()
 
-  GLvoid *offset = reinterpret_cast<GLvoid *>(accumulative_ebo_offset_);
+  auto *offset = reinterpret_cast<GLvoid *>(accumulative_ebo_offset_);
   i_target_offsets_.push_back(offset);
   i_target_sizes_.push_back(vdp->n_indices);
 
   accumulative_ebo_offset_ += SizeOfIndexData(vdp);
 
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, vdp->n_indices, vdp->i_data,
-               DrawingSpecToGlenum(ds));
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, SizeOfIndexData(vdp), vdp->i_data,
+               DrawingSpecToGlEnum(ds));
   GL_CHECK()
 
   CookShaderProgram(sp, i_target_shaders_);
 }
 
 void GlRenderer::CreateUnIndexedTarget(
-    const gl_rendering_target::VertexDataPointer *vdp, DrawingSpec ds,
+    const gl_rendering_target::VertexDataPointer *vdp,
     const gl_rendering_target::ShaderPack &sp) {
   auto vbo = vbo_[vbo_.size() - 1];
 
@@ -174,6 +165,8 @@ void GlRenderer::CreateVbo() {
   GL_CHECK()
 }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "readability-convert-member-functions-to-static"
 void GlRenderer::CookShaderProgram(const gl_rendering_target::ShaderPack &sp,
                                    std::vector<GLuint> &shaders_container) {
   // create vertex shader
@@ -226,7 +219,7 @@ void GlRenderer::CookShaderProgram(const gl_rendering_target::ShaderPack &sp,
   }
 #endif
 
-  glShaderSource(fs, 1, &fsrc, NULL);
+  glShaderSource(fs, 1, &fsrc, nullptr);
   GL_CHECK()
   glCompileShader(fs);
   GL_CHECK()
@@ -234,7 +227,7 @@ void GlRenderer::CookShaderProgram(const gl_rendering_target::ShaderPack &sp,
   // check
   glGetShaderiv(fs, GL_COMPILE_STATUS, &result);
   if (!result) {
-    glGetShaderInfoLog(fs, sizeof(infoLog), NULL, infoLog);
+    glGetShaderInfoLog(fs, sizeof(infoLog), nullptr, infoLog);
     Terminal::ReportErr("Error! Fragment shader failed to compile. ");
     Terminal::ReportErr(infoLog);
 
@@ -254,7 +247,7 @@ void GlRenderer::CookShaderProgram(const gl_rendering_target::ShaderPack &sp,
   glGetProgramiv(shader_program, GL_LINK_STATUS, &result);
   GL_CHECK()
   if (!result) {
-    glGetProgramInfoLog(shader_program, sizeof(infoLog), NULL, infoLog);
+    glGetProgramInfoLog(shader_program, sizeof(infoLog), nullptr, infoLog);
     Terminal::ReportErr("Error! Shader program linker failure ");
     Terminal::ReportErr(infoLog);
 
@@ -270,6 +263,7 @@ void GlRenderer::CookShaderProgram(const gl_rendering_target::ShaderPack &sp,
   // save program
   shaders_container.emplace_back(shader_program);
 }
+#pragma clang diagnostic pop
 
 void GlRenderer::ProcessRenderingTargetK11(
     const gl_rendering_target::RenderingTargetPackPointer rtpp, DrawingSpec ds,
@@ -282,7 +276,7 @@ void GlRenderer::ProcessRenderingTargetK11(
   CreateVbo();
   glBufferData(GL_ARRAY_BUFFER,
                gl_rendering_target::SizeOfVertexData(rtpp, target_index),
-               rtpp.vdp[target_index].v_data, DrawingSpecToGlenum(ds));
+               rtpp.vdp[target_index].v_data, DrawingSpecToGlEnum(ds));
   GL_CHECK()
 #ifdef RENDERER_VERBOSE
   if (rtpp.aps[target_index].layout != AttributeDataLayout::kContiguous) {
@@ -304,7 +298,7 @@ void GlRenderer::ProcessRenderingTargetK11(
       location_counter_,
       attribute::RuntimeMap::Get(rtpp.aps[target_index].scheme)->attributes_n,
       rtpp.aps[target_index].type_code,
-      BooleanToGLbool(rtpp.aps[target_index].is_data_NOT_normalized),
+      BooleanToGlBoolConstant(rtpp.aps[target_index].is_data_NOT_normalized),
       rtpp.aps[target_index].stride, rtpp.aps[target_index].offset);
   GL_CHECK()
 
@@ -314,7 +308,7 @@ void GlRenderer::ProcessRenderingTargetK11(
   if (rtpp.vdp[target_index].i_data != nullptr) {
     CreateIndexedTarget(&rtpp.vdp[target_index], ds, sp);
   } else {
-    CreateUnIndexedTarget(&rtpp.vdp[target_index], ds, sp);
+    CreateUnIndexedTarget(&rtpp.vdp[target_index], sp);
   }
 }
 
@@ -329,7 +323,7 @@ void GlRenderer::ProcessRenderingTargetK1N(
 
   auto s = gl_rendering_target::SizeOfVertexData(rtpp, 0);
   auto d = rtpp.vdp[0].v_data;
-  auto ddss = DrawingSpecToGlenum(ds);
+  auto ddss = DrawingSpecToGlEnum(ds);
 
   glBufferData(GL_ARRAY_BUFFER, s, d, ddss);
   GL_CHECK()
@@ -359,7 +353,7 @@ void GlRenderer::ProcessRenderingTargetK1N(
     auto location = location_counter_ + i;
     auto number = attribute::RuntimeMap::Get(rtpp.aps[i].scheme)->attributes_n;
     auto gltype = rtpp.aps[i].type_code;
-    auto glbool = BooleanToGLbool(rtpp.aps[i].is_data_NOT_normalized);
+    auto glbool = BooleanToGlBoolConstant(rtpp.aps[i].is_data_NOT_normalized);
     auto stride = rtpp.aps[i].stride;
     auto offset = rtpp.aps[i].offset;
 
@@ -373,7 +367,7 @@ void GlRenderer::ProcessRenderingTargetK1N(
   if (rtpp.vdp[0].i_data != nullptr) {
     CreateIndexedTarget(&rtpp.vdp[0], ds, sp);
   } else {
-    CreateUnIndexedTarget(&rtpp.vdp[0], ds, sp);
+    CreateUnIndexedTarget(&rtpp.vdp[0], sp);
   }
 }
 
@@ -382,7 +376,7 @@ void GlRenderer::RenderFrame() {
   static bool already_reported = false;
 
   if (!already_reported)
-    if (vbo_.size() == 0 || v_target_shaders_.size() == 0) {
+    if (vbo_.empty() || v_target_shaders_.empty()) {
       if (already_reported) return;
 
       Terminal::ReportErr("GlRenderer is not initialized.");
@@ -392,7 +386,10 @@ void GlRenderer::RenderFrame() {
   already_reported = true;
 #endif
 
-  glClear(GL_COLOR_BUFFER_BIT);
+  glClearColor(clear_color_.red, clear_color_.green, clear_color_.blue,
+               clear_color_.alpha);
+  GL_CHECK()
+  glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   GL_CHECK()
 
   // Render targets is working only with one vao (currently)
@@ -411,7 +408,7 @@ void GlRenderer::RenderFrame() {
   // NOTE: not done yet
   // indexed targets rendering
 
-  if (ebo_.size() > 0)
+  if (!ebo_.empty()) {
     for (size_t i = 0; i < i_target_sizes_.size(); ++i) {
       glUseProgram(i_target_shaders_[i]);
       GL_CHECK()
@@ -421,6 +418,8 @@ void GlRenderer::RenderFrame() {
                      i_target_offsets_[i]);
       GL_CHECK()
     }
+  } else {
+  }
 
   glBindVertexArray(0);
   GL_CHECK()
@@ -433,3 +432,17 @@ GlRenderer::~GlRenderer() {
   for (auto i : ebo_) glDeleteBuffers(1, &i);
   glDeleteVertexArrays(1, &vao_);
 }
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "readability-convert-member-functions-to-static"
+void GlRenderer::SwitchGlPolygonMode(GlPolygonMode mode) {
+  glPolygonMode(GL_FRONT_AND_BACK, GlPolygonModeToGlEnum(mode));
+}
+
+const gl_color &GlRenderer::getClearColor() const { return clear_color_; }
+
+void GlRenderer::setClearColor(const gl_color &clear_color) {
+  clear_color_ = clear_color;
+}
+
+#pragma clang diagnostic pop

@@ -11,14 +11,15 @@
 #include <memory>
 #include <vector>
 
+#include "engine/service/text_world/text_world_object_processor.h"
 #include "engine/service/variable_processing/game_variables.h"
 #include "level.h"
-#include "engine/service/text_world/text_world_object_processor.h"
 
 // TODO: factory
 class GameLevelLogicProcessor {
  public:
   static void Init();
+  // TODO: hide this
   static GameLevelLogicProcessor& GetSingleton();
 
   void ProcessLevel(size_t level_id);
@@ -29,12 +30,22 @@ class GameLevelLogicProcessor {
 
   static void BreakMainLoop();
 
- private:
+  void SetNextLevel(size_t i);
+
+  static bool isNotLastLevel();
+
+  void ProcessNextLevel();
+
+    static void setTransition(bool b);
+
+private:
   inline static std::unique_ptr<GameLevelLogicProcessor> singleton_;
   inline static bool is_inited_;
   inline static bool is_continuing_;
-  size_t current_processing_level_id_{};
+  inline static bool is_transition_;
+  size_t current_processing_level_id_{0};
   std::chrono::milliseconds frame_delta_;
+  size_t next_processing_level_id{0};
 };
 
 #endif  // INC_03_GUESS_NUMBER_GAME_LEVEL_LOGIC_PROCESSOR_H

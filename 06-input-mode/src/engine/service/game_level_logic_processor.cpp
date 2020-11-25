@@ -13,8 +13,6 @@
 #include "utils/file_to_string.h"
 #include "utils/terminal.h"
 
-
-
 void GameLevelLogicProcessor::ProcessLevel(size_t level_id) {
   current_processing_level_id_ = level_id;
   (*gGameConfiguration.Levels)[level_id].game_logic.OnLoad();
@@ -32,7 +30,7 @@ void GameLevelLogicProcessor::ProcessLevel(size_t level_id) {
     EventProcessingService::ProcessEvent();
 
     frame_delta_ = std::chrono::duration_cast<std::chrono::milliseconds>(
-            last_frame_end - begin);
+        last_frame_end - begin);
 
     if (frame_delta_.count() < 1000 % 60) {
       std::this_thread::yield();
@@ -45,15 +43,10 @@ void GameLevelLogicProcessor::ProcessLevel(size_t level_id) {
 
     (*gGameConfiguration.Levels)[level_id].game_logic.ExecuteTextWorldLogic();
 
-    auto fptr = (*gGameConfiguration.Levels)[level_id].game_logic.TransitionCondition;
-    if((fptr == nullptr) || (fptr())){
-      is_continuing_ = false;
-    }
+    (*gGameConfiguration.Levels)[level_id].game_logic.Transition();
 
     begin = last_frame_end;
   }
-
-  (*gGameConfiguration.Levels)[level_id].game_logic.Transition();
 
   GlRendererService::Destroy();
 }
@@ -95,3 +88,21 @@ void GameLevelLogicProcessor::LoadTextWorldObject(
 }
 
 void GameLevelLogicProcessor::BreakMainLoop() { is_continuing_ = false; }
+
+void GameLevelLogicProcessor::SetNextLevel(size_t i) {
+  next_processing_level_id = i;
+}
+
+bool GameLevelLogicProcessor::isNotLastLevel() {
+  return is_transition_;
+}
+
+void GameLevelLogicProcessor::ProcessNextLevel() {
+  is_transition_ = false;
+  current_processing_level_id_ = next_processing_level_id;
+  ProcessLevel(current_processing_level_id_);
+}
+
+void GameLevelLogicProcessor::setTransition(bool b) {
+  is_transition_ = b;
+}

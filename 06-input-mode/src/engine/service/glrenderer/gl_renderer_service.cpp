@@ -28,11 +28,11 @@ static VertexDataPointer vdp = VertexDataPointer(id, 3, data);
 static AttributePackSpecification aps[] = {
     AttributePackSpecification(id, GL_FLOAT, AttributeDataLayout::kInterleaved,
                                attribute::Scheme::kPosition3d, nullptr,
-                               6 * (GLsizei)SizeOfGlTypeByGLenum(GL_FLOAT)),
+                               6 * (GLsizei)SizeOfGlTypeByGlEnum(GL_FLOAT)),
     AttributePackSpecification(id, GL_FLOAT, AttributeDataLayout::kInterleaved,
                                attribute::Scheme::kColorRgb,
                                (GLfloat*)(sizeof(GLfloat) * 3),
-                               6 * (GLsizei)SizeOfGlTypeByGLenum(GL_FLOAT))};
+                               6 * (GLsizei)SizeOfGlTypeByGlEnum(GL_FLOAT))};
 
 static RenderingTargetPackPointer rtpp{&vdp, aps, 1, 2};
 
@@ -73,6 +73,7 @@ static GLfloat v_data[]  // clang-format off
     };
                          // clang-format on
 
+//TODO: ...Must be one of GL_UNSIGNED_BYTE, GL_UNSIGNED_SHORT, or GL_UNSIGNED_INT...
 static VertexDataPointer vdp =
     VertexDataPointer(id, 4, v_data, 6, GL_UNSIGNED_INT, i_data);
 
@@ -102,8 +103,8 @@ void GlRendererService::SetActiveWindow(SDL_Window* window) {
 }
 
 void LoadMesh(visual_world_objects::Type vwo) {
-  if (std::get_if<visual_world_objects::Viewable>(&vwo) != nullptr) {
-    auto vrt = std::get<visual_world_objects::Viewable>(vwo);
+  if (std::get_if<visual_world_objects::ViewableTriangle>(&vwo) != nullptr) {
+    auto vrt = std::get<visual_world_objects::ViewableTriangle>(vwo);
 
     if (vrt.mesh.getRtpp().n_vdp == 0) {
       using namespace pep::assets::SimpleTriangleInterleaved;
@@ -111,6 +112,18 @@ void LoadMesh(visual_world_objects::Type vwo) {
                     FileToString(f_shader_src_path), 2,
                     attribute_location_scheme};
       meshes.emplace_back(rtpp, RenderingTargetType::VertexDescribed, sp);
+    }
+  }
+
+  if (std::get_if<visual_world_objects::ViewableQuad>(&vwo) != nullptr) {
+    auto vrt = std::get<visual_world_objects::ViewableQuad>(vwo);
+
+    if (vrt.mesh.getRtpp().n_vdp == 0) {
+      using namespace pep::assets::SimpleQuadIndexed;
+      ShaderPack sp{FileToString(v_shader_src_path),
+                    FileToString(f_shader_src_path), 1,
+                    attribute_location_scheme};
+      meshes.emplace_back(rtpp, RenderingTargetType::IndexDescribed, sp);
     }
   }
 }
@@ -135,4 +148,16 @@ void GlRendererService::InitFor(size_t level_id) {
 void GlRendererService::Destroy() {
   meshes.erase(meshes.begin(), meshes.end());
   gl_renderer.reset();
+}
+
+void GlRendererService::SwitchGlPolygonMode(GlPolygonMode mode) {
+  gl_renderer->SwitchGlPolygonMode(mode);
+}
+
+void GlRendererService::SetGlClearColor(gl_color color) {
+  gl_renderer->setClearColor(color);
+}
+
+gl_color GlRendererService::GetGlClearColor() {
+  return gl_renderer->getClearColor();
 }

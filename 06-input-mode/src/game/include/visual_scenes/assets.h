@@ -23,6 +23,7 @@ inline const std::vector<std::string> eng_str_assets{
     "Press Left and Right arrow keys to switch the level",
     "Mouse swipes should work too.",
     "Touch swipes should work too.",
+    "<var>@@game_title</var> finished!"
     // "This is level with texture",
     // "Press O and P to switch input modes",
     // "Gestures should work too."
@@ -40,6 +41,7 @@ inline const std::vector<std::string> ru_str_assets{
     "Нажмите Вверх и Вниз клавишу стрелки для переключения уровня",
     "Свайпы мышью тоже должны работать",
     "Свайпы на тач-экране тоже должны работать",
+    "<var>@@game_title</var> окончено!",
         // "Это уровень с текстурой",
         // "Нажмите O и P для переключения режмов ввода",
         // "Жесты тоже должны работать"

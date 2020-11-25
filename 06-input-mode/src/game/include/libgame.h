@@ -30,7 +30,7 @@ getGlobalVariableDeclarations();
 PEP_DECLSPEC [[maybe_unused]] const std::vector<Level>* getLevels();
 PEP_DECLSPEC [[maybe_unused]] Culture::Language getLanguage();
 PEP_DECLSPEC [[maybe_unused]] AssetsLoadingStrategy getAssetsLoadingStrategy();
-
+PEP_DECLSPEC [[maybe_unused]] InputModeVector* getInputModes();
 }  // namespace game
 
 //#endif

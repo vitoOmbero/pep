@@ -6,8 +6,6 @@
 
 #include "engine/pep.h"
 
-// TODO: chaiscript embedded
-
 namespace VisualScenes::Logic {
 
 namespace intro_level {
@@ -27,6 +25,28 @@ inline const Level data{
     {intro_level::OnLoad, intro_level::ExecuteTextWorldLogic,
      intro_level::Transition}};
 }  // namespace intro_level
+
+namespace bye_level {
+
+void OnLoad();
+
+void ExecuteTextWorldLogic();
+
+void Transition();
+
+inline text_world_objects::Stand bye{
+    {{"@@game_title"}},
+    false,
+    text_world_objects::Stand::Layout::kFixedDefaultBordered,
+    0};
+
+inline const Level data{
+    // LEVEL
+    {8},
+    {{bye}},
+    {intro_level::OnLoad, intro_level::ExecuteTextWorldLogic,
+     intro_level::Transition}};
+}  // namespace bye_level
 
 namespace common_text_world_objects {
 
@@ -69,12 +89,10 @@ void ExecuteTextWorldLogic();
 
 void Transition();
 
-bool TransitionCondition();
-
 inline text_world_objects::Stand triangle_info{
     {{/*no*/}}, false, text_world_objects::Stand::Layout::kPureText, 0};
 
-inline visual_world_objects::Viewable default_triangle{};
+inline visual_world_objects::ViewableTriangle default_triangle{};
 
 inline static std::vector<visual_world_objects::Type> vwo{
     visual_world_objects::Type(default_triangle)};
@@ -86,7 +104,7 @@ inline const Level data{
       common_text_world_objects::switch_level_info,
       common_text_world_objects::mouse_info,
       common_text_world_objects::touch_info}},
-    {OnLoad, ExecuteTextWorldLogic, Transition, TransitionCondition},
+    {OnLoad, ExecuteTextWorldLogic, Transition},
     vwo};
 
 };  // namespace triangle_level
@@ -102,6 +120,11 @@ void Transition();
 inline text_world_objects::Stand quad_info{
     {{/*no*/}}, false, text_world_objects::Stand::Layout::kPureText, 0};
 
+inline visual_world_objects::ViewableQuad default_quad{};
+
+inline static std::vector<visual_world_objects::Type> vwo{
+    visual_world_objects::Type(default_quad)};
+
 inline const Level data{
     {{2, 3, 4, 5, 6, 7}},
     {{quad_info, common_text_world_objects::change_render_mode_info,
@@ -109,7 +132,8 @@ inline const Level data{
       common_text_world_objects::switch_level_info,
       common_text_world_objects::mouse_info,
       common_text_world_objects::touch_info}},
-    {OnLoad, ExecuteTextWorldLogic, Transition}};
+    {OnLoad, ExecuteTextWorldLogic, Transition},
+    vwo};
 
 }  // namespace quad_level
 
@@ -122,8 +146,48 @@ inline std::vector<VariableDeclaration> declaration{
 
 }  // namespace GlobalVariables
 
-inline const std::vector<Level> guess_number_levels{
-    intro_level::data, triangle_level::data, quad_level::data};
+namespace Input {
+
+struct Config {
+  bool EnableLetters = true;
+  bool EnableArrows = true;
+  bool EnableMouse = true;
+  bool EnableMouseGestures = true;
+  bool EnableTouchGestures = true;
+};
+
+void SwitchPolygonMode();
+void IncreaseColor();
+void DecreaseColor();
+void GotoPrevLevel();
+void GotoNextLevel();
+void Quit();
+
+inline static KeyMap common_map{
+    {KeyName::kW, SwitchPolygonMode},      {KeyName::kArrowUp, IncreaseColor},
+    {KeyName::kArrowDown, DecreaseColor},  {KeyName::kArrowLeft, GotoPrevLevel},
+    {KeyName::kArrowRight, GotoNextLevel}, {KeyName::kQ, Quit}
+};
+
+inline static InputMode common_mode{common_map};
+inline static std::vector<InputMode> data{common_mode};
+
+/*
+binding_temp mouse_swipe_left{"mouse_lb_swipe_left", "goto_previous_level"};
+binding_temp mouse_swipe_right{"mouse_lb_swipe_right", "goto_next_level"};
+binding_temp mouse_swipe_up{"mouse_lb_swipe_up", "increase_color"};
+binding_temp mouse_swipe_down{"mouse_lb_swipe_down", "decrease_color"};
+
+binding_temp touch_swipe_left{"touch_swipe_left", "goto_previous_level"};
+binding_temp touch_swipe_right{"touch_swipe_right", "goto_next_level"};
+binding_temp touch_swipe_up{"touch_swipe_up", "increase_color"};
+binding_temp touch_swipe_down{"touch_swipe_down", "decrease_color"};
+*/
+
+}  // namespace Input
+
+inline const std::vector<Level> visual_scenes{
+    intro_level::data, triangle_level::data, quad_level::data, bye_level::data};
 
 }  // namespace VisualScenes::Logic
 #endif  // INC_03_GUESS_NUMBER_G_NUMBER_LOGIC_H

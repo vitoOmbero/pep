@@ -5,10 +5,10 @@ DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_BEGIN
 #include <iostream>
 DOCTEST_MAKE_STD_HEADERS_CLEAN_FROM_WARNINGS_ON_WALL_END
 
+#include "symbol_export.h"
 #include "visual_scenes/assets.h"
 #include "visual_scenes/logic.h"
 #include "visual_scenes/metainfo.h"
-#include "symbol_export.h"
 
 PEP_DECLSPEC const GameDescriptionInfo* game::getDescriptionInfo() {
   return &VisualScenes::gdi;
@@ -32,13 +32,17 @@ game::getGlobalVariableDeclarations() {
 }
 
 PEP_DECLSPEC const std::vector<Level>* game::getLevels() {
-  return &VisualScenes::Logic::guess_number_levels;
+  return &VisualScenes::Logic::visual_scenes;
 }
 
 PEP_DECLSPEC Culture::Language game::getLanguage() { return Culture::kEn; }
 
 PEP_DECLSPEC AssetsLoadingStrategy game::getAssetsLoadingStrategy() {
   return AssetsLoadingStrategy::kCompileTimeBuiltInAssets;
+}
+
+PEP_DECLSPEC InputModeVector* game::getInputModes() {
+  return &VisualScenes::Logic::Input::data;
 }
 
 TEST_CASE("visual_scenes") { printf("I am a test from the Visual Scenes!\n"); }
