@@ -54,3 +54,16 @@ The simplest solution is to define a game level as a term for any possible asset
 So, the "menu" concept will be realised as a game level.
 Menu can be realised as interactive 2d/3d world visualization (like regular game room) or just using gui service (imgui).
 Game room can be realised as closed-space or open world - engine will care of it.  
+
+## how to run
+
+```bash
+cd /scripts
+./run_build_d_vvv.sh
+```
+
+* copy assets directory from 00-common into directory where app.out is located;
+
+* Run app.out from terminal in Debug or Test folder in install directory.
+
+TODO: fix assets directory mounting

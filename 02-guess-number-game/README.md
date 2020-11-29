@@ -8,7 +8,7 @@ Segregation of duties:
 
 ...plus minor fixes.
 
-Your system may have not locale
+Note: Your system may have not locale
 
 ```bash
 locale -a

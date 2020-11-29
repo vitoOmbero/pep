@@ -7,12 +7,14 @@ This repo targets prototyping but not product developmnet.
 
 ## build targets
 
-Global build targets: 
+Global build targets:
+
 * *engine* - shared library and tests
 * *game* - shared library and tests
 * *app* - executable and tests
 
-Engine library: 
+Engine library:
+
 * self versioning;
 * produces *services* which are C++ wrappers of different libs or built-in features;
 * produces *main loop*;
@@ -21,6 +23,7 @@ Engine library:
 * default assets are built in sources, as there is no game developmant toolchain yet;
 
 Game library:
+
 * self versioning;
 * declare asset managing polytics: optional, core, etc;
 * declare game features and objects using engine interfaces;
@@ -28,6 +31,7 @@ Game library:
 * produce handles to be used in runtime by *app* (extern C);
 
 App executable:
+
 * provides execution runtime context: test app, release client, debuggable client, game development toolchain app, etc;
 * realise the asset managing polytics;
 * contains the code which is specific for target platform;
@@ -40,4 +44,11 @@ App executable:
 * the second is variant of: engine test app, game lib, both;
 * the third is variant of: game test app, target app, both;
 
-    
+## run
+
+```bash
+cd /scripts
+./run_build_d_vvv.sh
+```
+
+Note: modify shel script if docker is not in sudo group
